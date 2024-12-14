@@ -25,7 +25,7 @@ const corsOptions = {
 app.use(cookieParser())
 app.use('/auth',UserRouter)
 
-mongoose.connect("mongodb://localhost:27017/finances_advisers")
+mongoose.connect("mongodb+srv://hamzamirza9084:6QRDNS0bHd8Bzhzy@hamzamirza786.ixn2m.mongodb.net/")
 
 app.get("/",(req,res)=>{
     res.json("Hello");
