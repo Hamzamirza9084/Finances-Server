@@ -38,24 +38,45 @@ router.post('/signup', async(req,res)=>{
     
 })
 
-router.post('/login', async(req,res)=>{
-    const {email,password} =req.body;
-    const user =await User.findOne({email});
-    if(!user)
-    {
-        return res.json({message:"user is not registered"})
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Find user in database
+    const user = await User.findOne({ email });
+    
+    // If user not found
+    if (!user) {
+      return res.json({ status: false, message: "user is not registered" });
     }
 
-    const vaildPassword = await bcrypt.compare(password, user.password)
-    if(!vaildPassword)
-    {
-        return res.json({message:"password is incorrect"})
+    // Check if password matches (you can hash and compare passwords if needed)
+    if (user.password !== password) {
+      return res.json({ status: false, message: "password is incorrect" });
     }
 
-    const token = jwt.sign({name: user.name,email:user.email},process.env.KEY,{expiresIn: '1h'})
-    res.cookie('token',token,{httpOnly:true,maxAge:10800000})
-    return res.json({status:true,message:"login successfully"})
-})
+    // Generate JWT token
+    const token = jwt.sign(
+      { email: user.email, id: user._id },  // Payload with user data
+      process.env.KEY,                       // Secret key for signing the token
+      { expiresIn: '1h' }                    // Token expiration (optional)
+    );
+
+    // Set the token in cookies (httpOnly ensures it's not accessible via JS)
+    res.cookie("token", token, {
+      httpOnly: true,       // Prevent access via JavaScript
+      secure: process.env.NODE_ENV === "production",  // Secure flag (HTTPS only in production)
+      maxAge: 3600000       // Optional: Token expiry (1 hour in ms)
+    });
+
+    // Send success response
+    return res.json({ status: true, message: "Login successful" });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ status: false, message: "Internal server error" });
+  }
+});
 
 router.post('/forget',async (req,res)=>{
     const {email} =req.body;
@@ -123,7 +144,7 @@ const verifyUser = async (req,res,next) =>{
     }
     const decoded = jwt.verify(token,process.env.KEY);
     req.user=decoded
-    next()
+    next();
   
   }catch(err)
     {
