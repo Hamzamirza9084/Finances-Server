@@ -42,36 +42,35 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Find user in database
+    // Find the user by email
     const user = await User.findOne({ email });
-    
-    // If user not found
     if (!user) {
-      return res.json({ status: false, message: "user is not registered" });
+      return res.status(400).json({ status: false, message: "User is not registered" });
     }
 
-    // Check if password matches (you can hash and compare passwords if needed)
-    if (user.password !== password) {
-      return res.json({ status: false, message: "password is incorrect" });
+    // Check if password matches
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return res.status(400).json({ status: false, message: "Password is incorrect" });
     }
 
     // Generate JWT token
     const token = jwt.sign(
-      { email: user.email, id: user._id },  // Payload with user data
-      process.env.KEY,                       // Secret key for signing the token
-      { expiresIn: '1h' }                    // Token expiration (optional)
+      { name: user.name, email: user.email },
+      process.env.KEY,  // Make sure you have this environment variable set
+      { expiresIn: '1h' }  // Token expiry (1 hour)
     );
 
-    // Set the token in cookies (httpOnly ensures it's not accessible via JS)
-    res.cookie("token", token, {
-      httpOnly: true,       // Prevent access via JavaScript
-      secure: process.env.NODE_ENV === "production",  // Secure flag (HTTPS only in production)
-      maxAge: 3600000       // Optional: Token expiry (1 hour in ms)
+    // Set the token in cookies (httpOnly makes it inaccessible via JavaScript)
+    res.cookie('token', token, {
+      httpOnly: true,
+      maxAge: 3600000,  // 1 hour (in ms), aligns with JWT expiry
+      secure: process.env.NODE_ENV === 'production'  // Set secure flag for production (ensure HTTPS)
     });
 
-    // Send success response
+    // Respond with success message
     return res.json({ status: true, message: "Login successful" });
-
+    
   } catch (err) {
     console.error(err);
     return res.status(500).json({ status: false, message: "Internal server error" });
