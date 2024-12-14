@@ -101,7 +101,7 @@ router.post('/forget',async (req,res)=>{
             from: 'hamzamirzaop786@gmail.com',
             to: email,
             subject: 'Reset Password',
-            text: `http://localhost:5173/reset/${token}`
+            text: `https://gregarious-fudge-8d4f5d.netlify.app//reset/${token}`
           };
           
           transporter.sendMail(mailOptions, function(error, info){
@@ -151,12 +151,12 @@ const verifyUser = async (req,res,next) =>{
   }
   }
 
-router.get('/verify',verifyUser,(req,res)=>{
+router.get('/verify',(req,res)=>{
   const userEmail = req.user.email;
     return res.json({status:true ,message:"authorized",email:userEmail})
 })
 
-router.get('/home',verifyUser,(req,res)=>{
+router.get('/home',(req,res)=>{
   const userEmail = req.user.email;
     return res.json({status:true ,message:"authorized",email:userEmail})
 })
@@ -166,7 +166,7 @@ router.get('/logout',(req,res)=>{
   return res.json({status:true}) 
 })
 
-router.post('/income',verifyUser,async(req,res)=>{
+router.post('/income',async(req,res)=>{
   const email = req.user.email;
   const{name,income,date,cat,type} =req.body;
   
@@ -183,7 +183,7 @@ router.post('/income',verifyUser,async(req,res)=>{
   return res.json({status:true ,message :"Income added"})
 })
 
-router.post('/expenses',verifyUser,async(req,res)=>{
+router.post('/expenses',async(req,res)=>{
   const email = req.user.email;
   const{name,expenses,date,cat,type} =req.body;
   
@@ -201,7 +201,7 @@ router.post('/expenses',verifyUser,async(req,res)=>{
 })
 
 
-router.get('/expensesinfo',verifyUser,async(req,res)=>{
+router.get('/expensesinfo',async(req,res)=>{
   try {
     const email = req.user.email;
     const user=await Expenses.find({email})
@@ -231,7 +231,7 @@ router.post('/contactus',async(req,res)=>{
   
 })
 
-router.put('/expensesinfo/:id', verifyUser, async (req, res) => {
+router.put('/expensesinfo/:id', async (req, res) => {
   try {
     const { name, expenses, date, cat, type } = req.body;
     const updatedExpense = await Expenses.findByIdAndUpdate(
@@ -246,7 +246,7 @@ router.put('/expensesinfo/:id', verifyUser, async (req, res) => {
 });
 
 
-router.delete('/expensesinfo/:id', verifyUser, async (req, res) => {
+router.delete('/expensesinfo/:id', async (req, res) => {
   try {
     await Expenses.findByIdAndDelete(req.params.id);
     res.json({ message: "Expense deleted successfully" });
@@ -255,7 +255,7 @@ router.delete('/expensesinfo/:id', verifyUser, async (req, res) => {
   }
 });
 
-router.put('/incomeinfo/:id', verifyUser, async (req, res) => {
+router.put('/incomeinfo/:id', async (req, res) => {
   try {
     const { name, income, date, cat, type } = req.body;
     const updatedExpense = await Income.findByIdAndUpdate(
@@ -270,7 +270,7 @@ router.put('/incomeinfo/:id', verifyUser, async (req, res) => {
 });
 
 
-router.delete('/incomeinfo/:id', verifyUser, async (req, res) => {
+router.delete('/incomeinfo/:id', async (req, res) => {
   try {
     await Income.findByIdAndDelete(req.params.id);
     res.json({ message: "Income deleted successfully" });
@@ -279,7 +279,7 @@ router.delete('/incomeinfo/:id', verifyUser, async (req, res) => {
   }
 });
 
-router.get('/incomeinfo',verifyUser,async(req,res)=>{
+router.get('/incomeinfo',async(req,res)=>{
   try {
     const email = req.user.email;
     const user=await Income.find({email})
@@ -328,7 +328,7 @@ const verifyAdmin = async (req, res, next) => {
   }
 };
 
-router.get('/verifyadmin',verifyAdmin,(req,res)=>{
+router.get('/verifyadmin',(req,res)=>{
   const Adminname = req.user1.name;
     return res.json({status:true ,message:"authorized",name:Adminname})
 })
@@ -347,7 +347,7 @@ router.get('/admininfo',async(req,res)=>{
   }
 })
 
-router.get('/balance', verifyUser, async (req, res) => {
+router.get('/balance', async (req, res) => {
   const email = req.user.email;
   try {
       const incomes = await Income.find({ email });
@@ -364,7 +364,7 @@ router.get('/balance', verifyUser, async (req, res) => {
 });
 
 
-router.post('/setgoal', verifyUser, async (req, res) => {
+router.post('/setgoal', async (req, res) => {
   const email = req.user.email;
   const { goalName, targetAmount } = req.body;
 
@@ -421,7 +421,7 @@ router.post('/setgoal', verifyUser, async (req, res) => {
 });
 
 
-router.get('/checkBalance', verifyUser, async (req, res) => {
+router.get('/checkBalance', async (req, res) => {
   const email = req.user.email;
 
   try {
@@ -464,7 +464,7 @@ router.get('/checkBalance', verifyUser, async (req, res) => {
   }
 });
 
-router.get('/incomes', verifyUser, async (req, res) => {
+router.get('/incomes', async (req, res) => {
   try {
       const email = req.user.email;  
       const incomes = await Income.find({ email });  
@@ -475,7 +475,7 @@ router.get('/incomes', verifyUser, async (req, res) => {
 });
 
 
-router.get('/expenses', verifyUser, async (req, res) => {
+router.get('/expenses', async (req, res) => {
   try {
       const email = req.user.email;  
       const expenses = await Expenses.find({ email });  
