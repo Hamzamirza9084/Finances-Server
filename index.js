@@ -13,6 +13,15 @@ app.use(cors({
     origin:["http://localhost:5173"],
     credentials: true
 }))
+
+const corsOptions = {
+    origin: 'https://gregarious-fudge-8d4f5d.netlify.app', // Your frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
+    credentials: true, // Allow cookies
+  };
+  
+  app.use(cors(corsOptions));
+
 app.use(cookieParser())
 app.use('/auth',UserRouter)
 
