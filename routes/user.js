@@ -151,7 +151,7 @@ const verifyUser = async (req,res,next) =>{
   }
   }
 
-router.get('/verify',(req,res)=>{
+router.get('/verify',verifyUser,(req,res)=>{
   const userEmail = req.user.email;
     return res.json({status:true ,message:"authorized",email:userEmail})
 })
